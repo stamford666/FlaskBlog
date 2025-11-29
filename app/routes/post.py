@@ -62,6 +62,50 @@ def post(urlID=None, slug=None):
         )
         connection.commit()
 
+        # 记录浏览历史
+        if "userName" in session:
+            userName = session["userName"]
+            postID = post[0]
+            
+            # 连接到分析数据库
+            analytics_conn = sqlite3.connect(Settings.DB_ANALYTICS_ROOT)
+            analytics_conn.set_trace_callback(Log.database)
+            analytics_cursor = analytics_conn.cursor()
+            
+            try:
+                # 检查是否已经有该用户对这篇文章的浏览记录
+                analytics_cursor.execute(
+                    """select id from browsingHistory where userName = ? and postID = ? """,
+                    (userName, postID)
+                )
+                existing_record = analytics_cursor.fetchone()
+                
+                if existing_record:
+                    # 如果记录存在，更新时间戳
+                    analytics_cursor.execute(
+                        """update browsingHistory set timeStamp = ? where id = ? """,
+                        (currentTimeStamp(), existing_record[0])
+                    )
+                else:
+                    # 如果记录不存在，插入新记录
+                    analytics_cursor.execute(
+                        """insert into browsingHistory (userName, postID, timeStamp) values (?, ?, ?) """,
+                        (userName, postID, currentTimeStamp())
+                    )
+                
+                # 删除一个月前的浏览记录
+                one_month_ago = currentTimeStamp() - (30 * 24 * 60 * 60)
+                analytics_cursor.execute(
+                    """delete from browsingHistory where timeStamp < ? """,
+                    (one_month_ago,)
+                )
+                
+                analytics_conn.commit()
+            except Exception as e:
+                Log.error(f"Error recording browsing history: {str(e)}")
+            finally:
+                analytics_conn.close()
+
         if request.method == "POST":
             if "postDeleteButton" in request.form:
                 Delete.post(post[0])

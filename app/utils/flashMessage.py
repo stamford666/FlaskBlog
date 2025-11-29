@@ -18,7 +18,7 @@ def flashMessage(page="error", message="wrongCall", category="error", language="
         None
     """
     text = None
-    translationFile = f"./translations/{language}.json"
+    translationFile = f"./app/translations/{language}.json"
     if exists(translationFile):
         with open(translationFile, "r", encoding="utf-8") as file:
             translations = load(file)
