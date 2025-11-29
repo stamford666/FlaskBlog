@@ -88,6 +88,10 @@
     "placeholder": "New Username",
     "change": "Change Username"
   },
+  "browsingHistory": {
+    "title": "Browsing History",
+    "noHistory": "You have no browsing history in the last month."
+  },
   "createPost": {
     "title": "Create Post",
     "titlePlaceholder": "post title",

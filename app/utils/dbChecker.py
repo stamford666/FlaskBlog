@@ -276,3 +276,51 @@ def analyticsTable():
         Log.success(
             f'Table: "postsAnalytics" created in "{Settings.DB_ANALYTICS_ROOT}"'
         )
+
+
+def browsingHistoryTable():
+    """
+    Checks if the browsing history table exists in the database, and creates it if it does not.
+
+    Returns:
+        None
+    """
+
+    if exists(Settings.DB_ANALYTICS_ROOT):
+        Log.info(f'Analytics database: "{Settings.DB_ANALYTICS_ROOT}" found')
+    else:
+        Log.error(f'Analytics database: "{Settings.DB_ANALYTICS_ROOT}" not found')
+
+        open(Settings.DB_ANALYTICS_ROOT, "x")
+
+        Log.success(f'Analytics database: "{Settings.DB_ANALYTICS_ROOT}" created')
+    Log.database(f"Connecting to '{Settings.DB_ANALYTICS_ROOT}' database")
+
+    connection = sqlite3.connect(Settings.DB_ANALYTICS_ROOT)
+    connection.set_trace_callback(Log.database)
+    cursor = connection.cursor()
+    try:
+        cursor.execute("""select id from browsingHistory; """).fetchall()
+
+        Log.info(f'Table: "browsingHistory" found in "{Settings.DB_ANALYTICS_ROOT}"')
+
+        connection.close()
+    except Exception:
+        Log.error(f'Table: "browsingHistory" not found in "{Settings.DB_ANALYTICS_ROOT}"')
+
+        browsingHistoryTable = """
+        CREATE TABLE "browsingHistory" (
+            "id"    integer not null unique,
+            "userName"  text,
+            "postID"    integer,
+            "timeStamp" integer,
+            primary key("id" autoincrement)
+        );"""
+
+        cursor.execute(browsingHistoryTable)
+
+        connection.commit()
+
+        connection.close()
+
+        Log.success(f'Table: "browsingHistory" created in "{Settings.DB_ANALYTICS_ROOT}"')
