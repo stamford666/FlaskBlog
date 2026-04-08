@@ -15,7 +15,7 @@ def loadTranslations(language):
         dict: A dictionary containing the translations for the specified language.
     """
 
-    translationFile = f"./translations/{language}.json"
+    translationFile = f"./app/translations/{language}.json"
     if exists(translationFile):
         with open(translationFile, "r", encoding="utf-8") as file:
             translations = load(file)

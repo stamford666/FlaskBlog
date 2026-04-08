@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="w-11/12 lg:w-10/12 xl:w-9/12 2xl:w-8/12 mx-auto mt-8">
+    <h1 class="text-3xl font-bold mb-6">最近浏览</h1>
+    
+    {% if browsing_history %} 
+        <div class="space-y-4">
+            {% for item in browsing_history %} 
+                <div class="p-4 border rounded-lg shadow hover:shadow-md transition-shadow">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <a href="/post/{{ item.urlID }}" class="text-xl font-semibold hover:text-blue-600 transition-colors">
+                                {{ item.title }}
+                            </a>
+                            <div class="mt-2 flex items-center text-sm text-gray-600">
+                                <span class="bg-gray-100 px-2 py-1 rounded-full mr-3">
+                                    {{ item.category }}
+                                </span>
+                                <span>
+                                    {% set current_time = (now|int) %}
+                                    {% set diff = current_time - item.timeStamp %}
+                                    
+                                    {% if diff < 60 %} 
+                                        刚刚
+                                    {% elif diff < 3600 %} 
+                                        {{ (diff // 60) }} 分钟前
+                                    {% elif diff < 86400 %} 
+                                        {{ (diff // 3600) }} 小时前
+                                    {% elif diff < 604800 %} 
+                                        {{ (diff // 86400) }} 天前
+                                    {% else %} 
+                                        {{ (diff // 604800) }} 周前
+                                    {% endif %} 
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %} 
+        </div>
+    {% else %} 
+        <div class="text-center py-12">
+            <p class="text-gray-500 text-lg">您还没有浏览过任何文章</p>
+        </div>
+    {% endif %} 
+</div>
+{% endblock %}

@@ -95,6 +95,9 @@ from routes.user import userBlueprint
 from routes.verifyUser import (
     verifyUserBlueprint,
 )
+from routes.browsingHistory import (
+    browsingHistoryBlueprint,
+)
 from settings import Settings
 from utils.afterRequest import (
     afterRequestLogger,
@@ -109,6 +112,7 @@ from utils.contextProcessor.translations import injectTranslations
 from utils.contextProcessor.markdown import markdown_processor
 from utils.dbChecker import (
     analyticsTable,
+    browsingHistoryTable,
     commentsTable,
     dbFolder,
     postsTable,
@@ -229,6 +233,7 @@ usersTable()
 postsTable()
 commentsTable()
 analyticsTable()
+browsingHistoryTable()
 
 
 @app.errorhandler(404)
@@ -274,6 +279,7 @@ app.register_blueprint(searchBarBlueprint)
 app.register_blueprint(adminPanelBlueprint)
 app.register_blueprint(createPostBlueprint)
 app.register_blueprint(verifyUserBlueprint)
+app.register_blueprint(browsingHistoryBlueprint)
 app.register_blueprint(setLanguageBlueprint)
 app.register_blueprint(setThemeBlueprint)
 app.register_blueprint(privacyPolicyBlueprint)
