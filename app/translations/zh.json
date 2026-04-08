@@ -87,6 +87,10 @@
     "placeholder": "新用户名",
     "change": "更改用户名"
   },
+  "browsingHistory": {
+    "title": "浏览历史",
+    "noHistory": "您在过去一个月内没有浏览历史。"
+  },
   "createPost": {
     "title": "创建帖子",
     "titlePlaceholder": "帖子标题",

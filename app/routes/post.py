@@ -62,6 +62,42 @@ def post(urlID=None, slug=None):
         )
         connection.commit()
 
+        # Record browsing history if user is logged in
+        if "userName" in session:
+            userName = session["userName"]
+            postID = post[0]
+            timeStamp = currentTimeStamp()
+
+            # Check if user has already viewed this post
+            Log.database(f"Connecting to '{Settings.DB_ANALYTICS_ROOT}' database")
+            connection = sqlite3.connect(Settings.DB_ANALYTICS_ROOT)
+            connection.set_trace_callback(Log.database)
+            cursor = connection.cursor()
+
+            cursor.execute(
+                """select id from browsingHistory where userName = ? and postID = ? """,
+                (userName, postID),
+            )
+            existing_record = cursor.fetchone()
+
+            if existing_record:
+                # Update existing record with new timestamp
+                cursor.execute(
+                    """update browsingHistory set timeStamp = ? where id = ? """,
+                    (timeStamp, existing_record[0]),
+                )
+            else:
+                # Insert new record
+                cursor.execute(
+                    """insert into browsingHistory (userName, postID, timeStamp) values (?, ?, ?) """,
+                    (userName, postID, timeStamp),
+                )
+
+            connection.commit()
+            connection.close()
+
+            Log.success(f'User: "{userName}" browsing history recorded for post: "{urlID}"')
+
         if request.method == "POST":
             if "postDeleteButton" in request.form:
                 Delete.post(post[0])
